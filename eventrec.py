@@ -47,9 +47,8 @@ with open('eventdata.csv') as csvfile:
             emails_to_events[email].append(current_event)
         except:
             print(email)
-    """ Creates an array of zeros the size of the number of events. """
 
-    """ Creates an array of arrays of zeros the size of the number of email * the number of events. """
+    """ Creates a matrix of zeros the size of the number of email * the number of events. """
     j = 0
     matrix_array = []
     while j < email_index:
@@ -63,12 +62,12 @@ with open('eventdata.csv') as csvfile:
 
 """ Creates a matrix where each row is an implicit user and each column is an implicit event. """
 user_matrix = np.array(matrix_array)
-g = "smccall@berkeley.edu"
-print(user_matrix[email_to_index[g]])
 
+""" Defines a similarity function as the norm of the difference between 2 users """
 def S(i, j):
     return np.linalg.norm(user_matrix[i] - user_matrix[j])
 
+""" Finds the past k guests most similar to the given email """
 def kNN(k, email):
     guestindex = email_to_index[email]
     neighbors = pq(maxsize=k)
@@ -86,6 +85,7 @@ def kNN(k, email):
 
     return nearestneighbors
 
+g = "courtney.brousseau@berkeley.edu" 
 print(kNN(10, g))
 
 
