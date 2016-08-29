@@ -20,7 +20,7 @@ attendance = []
 with open('eventdata.csv') as csvfile:
 	sheet = csv.reader(csvfile, delimiter= ',', quotechar='|')
 	for row in sheet:
-		attendance.append(str(row[18]))
+		attendance.append([str(row[18], str(row[0]), str(row[6]).lower())])
 		event = str(row[0])
 		email = str(row[6]).lower()
 		if event not in event_to_index.keys():
@@ -46,16 +46,14 @@ with open('eventdata.csv') as csvfile:
 	""" Fills in .5 for an email that signed up for a ticket and 1 for an email that checked in. """
 	sheet = csv.reader(csvfile, delimiter= ',', quotechar='|')
 	for row in attendance:
-		if str(row) == "Attending":
-			print("a")
-			# email_position = email_to_index[row[6]]
-			# event_position = event_to_index[row[0]]
-			# matrix_array[email_position][event_position] = .5
+		if str(row[0]) == "Attending":
+			email_position = row[2]
+			event_position = row[1]
+			matrix_array[email_position][event_position] = .5
 		if str(row) == "Checked In":
-			print("b")
-			# email_position = email_to_index[row[6]]
-			# event_position = event_to_index[row[0]]
-			# matrix_array[email_position][event_position] = 1
+			email_position = row[2]
+			event_position = row[1]
+			matrix_array[email_position][event_position] = 1
 
 """ Creates a matrix where each row is an implicit user and each column is an implicit event. """
 user_matrix = np.matrix(matrix_array)
