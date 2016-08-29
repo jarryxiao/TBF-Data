@@ -2,36 +2,47 @@ import csv
 import numpy as np
 from queue import PriorityQueue as pq
 
+""" State of events. """
+event_to_index = {}
+index_to_event = {}
+event_index = 0
 
+""" State of individuals. """
+email_to_index = {}
+index_to_email = {}
+email_index = 0
+
+""" Opens eventdata.csv and populates event_to_index and index_to_event. """
 with open('eventdata.csv') as csvfile:
-    rdr = csv.reader(csvfile)
-    data = next(r)
-    emails = {}
-    nametoemails = {}
-    emailtonames = {}
-    for row in rdr:
-        name = row[4] + " " + row[5]
-        name = name.lower()
-        email = row[6].lower()
-        tix = int(row[7])
+    test = csv.reader(csvfile, delimiter= ',', quotechar='|')
+    for row in test:
+        event = str(row[0])
+        email = str(row[6]).lower()
+        if event not in event_to_index.keys():
+            event_to_index[event] = event_index
+            index_to_event[event_index] = event
+            event_index += 1
+        if email not in email_to_index.keys() and '@' in email:
+            email_to_index[email] = email_index
+            index_to_email[email_index] = email
+            email_index += 1
 
-        if name not in attendees and email not in emails:
-            emails[email] = tix
-            attendees[name] = tix
-            nametoemails[name] = [email]
-            emailtonames[email] = [name]
-        elif name not in attendees:
-            emailtonames[email] += [name]
-            attendees[emailtonames[email][0]] += tix
-            emails[email] += tix
-        elif email not in emails:
-            nametoemails[name] += [email]
-            attendees[name] += tix
-            emails[nametoemails[name][0]] += tix
-        else:
-            attendees[name] += tix
-            emails[email] += tix
-        total += tix
+""" Creates an array of zeros the size of the number of events. """
+i = 0
+zero_list = []
+while i < event_index + 1:
+    zero_list.append(0)
+    i += 1
+
+""" Creates an array of arrays of zeros the size of the number of email * the number of events. """
+j = 0
+matrix_array = []
+while j < email_index + 1:
+    matrix_array.append(zero_list)
+    j += 1
+
+""" Creates a matrix where each row is an implicit user and each column is an implicit event. """
+user_matrix = np.matrix(matrix_array)
         
 
 def S(i, j):
