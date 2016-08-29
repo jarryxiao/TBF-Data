@@ -75,15 +75,14 @@ def kNN(k, email):
     for i in range(len(user_matrix)):
         if i != guestindex:
             simularity = -S(guestindex, i)
-            if not neighbors.full():
+            if neighbors.full():
                 neighbors.get()
             neighbors.put((simularity, index_to_email[i]))
 
     nearestneighbors = []
     while not neighbors.empty():
         i = neighbors.get()[1]
-        name = index_to_email[i]
-        nearestneighbors.append(name)
+        nearestneighbors.append(i)
 
     return nearestneighbors
 
