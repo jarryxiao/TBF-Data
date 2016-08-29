@@ -1,6 +1,7 @@
 import csv
 import numpy as np
-from Queue import PriorityQueue as pq
+from queue import PriorityQueue as pq
+
 
 with open('eventdata.csv') as csvfile:
     rdr = csv.reader(csvfile)
@@ -31,6 +32,7 @@ with open('eventdata.csv') as csvfile:
             attendees[name] += tix
             emails[email] += tix
         total += tix
+        
 
 def S(i, j):
     return np.linalg.norm(UM[i] - UM[j])
@@ -40,8 +42,20 @@ def kNN(k, guest):
     neighbors  = pq(maxsize=k)
     for i in range(len(UM)):
         if i != guestindex:
-            simularity = S(guestindex, i)
-            if neighbors is 
+            simularity = -S(guestindex, i)
+            if !neighbors.full():
+                neighbors.get()
+            neighbors.put((simularity, indextoguest[i]))
+
+    nearestneighbors = []
+    while not neighbors.empty():
+        i = neighbors.get()[1]
+        name = indextoguest[i]
+        nearestneighbors.append(name)
+
+    return nearestneighbors
+
+
 
 
 
