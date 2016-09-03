@@ -1,4 +1,7 @@
-/** SQL queries that might be of interest. Copy and paste into
+/**
+    SQL queries that might be of interest. Copy and paste into terminal.
+    To open db: sqlite3 eventdata.db
+*/
 
 /* Attendance rate for each event. */
 select event_name, round(r, 4)
