@@ -4,7 +4,7 @@ import re
 
 def collect():
     data = None
-    with open('data.csv') as csvdata:
+    with open('eventdata.csv') as csvdata:
         d = csv.reader(csvdata)
         data = list(d)
     with open('new_data.csv', 'w') as newdata:
@@ -17,6 +17,7 @@ def collect():
                     uid = get_uid(email.split('@')[0])
                 except:
                     print("Connection error:", count)
+                    print(row[4] + " " + row[5], email)
                 if uid:
                     writer.writerow([email, uid])
 
