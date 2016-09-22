@@ -19,11 +19,12 @@ matrix_array = []
 attendance = []
 
 """ Opens eventdata.csv and populates event_to_index and index_to_event. """
-with open('eventdata.csv') as csvfile:
+with open('guncontrolvalidation.csv', encoding = "ISO-8859-1") as csvfile:
     sheet = csv.reader(csvfile, delimiter= ',', quotechar='|')
     next(sheet)
-    for row in sheet:
+    i = 1
 
+    for row in sheet:
         status = row[18]
         if status == "Attending":
             status = 0.5
@@ -47,7 +48,6 @@ with open('eventdata.csv') as csvfile:
             emails_to_events[email].append(current_event)
         except:
             print(email)
-
     """ Creates a matrix of zeros the size of the number of email * the number of events. """
     j = 0
     matrix_array = []
@@ -62,18 +62,30 @@ with open('eventdata.csv') as csvfile:
 
 """ Creates a matrix where each row is an implicit user and each column is an implicit event. """
 user_matrix = np.array(matrix_array)
+validation_matrix = None
+print(index_to_event[53])
+print(len(user_matrix))
+for i in range(len(user_matrix)):
+
+    if user_matrix[i][53] != 0:
+        if validation_matrix is None:
+            validation_matrix = user_matrix[i][:event_index-1]
+        else:
+            validation_matrix = np.vstack((validation_matrix, user_matrix[i][:event_index-1]))
+
+print(validation_matrix.shape)
 
 """ Defines a similarity function as the norm of the difference between 2 users """
-def S(i, j):
-    return np.linalg.norm(user_matrix[i] - user_matrix[j])
+def S(i, j, UM):
+    return np.linalg.norm(UM[i] - UM[j])
 
 """ Finds the past k guests most similar to the given email """
-def kNN(k, email):
+def kNN(k, email, UM):
     guestindex = email_to_index[email]
     neighbors = pq(maxsize=k)
-    for i in range(len(user_matrix)):
+    for i in range(len(UM)):
         if i != guestindex:
-            simularity = -S(guestindex, i)
+            simularity = -S(guestindex, i, UM)
             if neighbors.full():
                 neighbors.get()
             neighbors.put((simularity, index_to_email[i]))
@@ -86,8 +98,20 @@ def kNN(k, email):
     return nearestneighbors
 
 g = "courtney.brousseau@berkeley.edu" 
-print(kNN(10, g))
+print(kNN(10, g, user_matrix))
 
+recommended = {}
+
+def validation(M):
+    for i in range(len(M)):
+        emails = kNN(10, index_to_email[i], M)
+        for e in emails:
+            if e not in recommended:
+                recommended[e] = [1, user_matrix[email_to_index[e]][53]]
+            else:
+                recommended[e][0] += 1
+    return recommended
+print(validation(validation_matrix))
 
 
 
