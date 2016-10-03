@@ -67,13 +67,8 @@ def pullfromsheet(row_id):
     result = service.spreadsheets().values().get(
         spreadsheetId=spreadsheetId, range=rangeName).execute()
     values = result.get('values', [])
+    return values[0]
 
-    if not values:
-        print('No data found.')
-    else:
-        for row in values:
-            # Print columns A and E, which correspond to indices 0 and 4.
-            print(row)
 
 
 if __name__ == '__main__':
