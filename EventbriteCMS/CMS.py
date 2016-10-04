@@ -6,6 +6,8 @@ from apiclient import discovery
 import oauth2client
 from oauth2client import client
 from oauth2client import tools
+from eventbrite import Eventbrite
+import requests
 
 try:
     import argparse
@@ -48,7 +50,7 @@ def get_credentials():
         print('Storing credentials to ' + credential_path)
     return credentials
 
-def pullfromsheet(row_id):
+def pull_from_sheet(row_id):
     """Shows basic usage of the Sheets API.
 
     Creates a Sheets API service object and prints the names and majors of
@@ -69,7 +71,34 @@ def pullfromsheet(row_id):
     values = result.get('values', [])
     return values[0]
 
+def create_event(event_id):
+    #details = pull_from_sheet(event_id)
+    eventbrite = Eventbrite('QXBUB7AGT6TGOYTSXLT4')
+    user = eventbrite.get_user()  # Not passing an argument returns yourself
+    events = eventbrite.get('/events/search/')
+    print(events)
+    print(user['id'])
+
+def create_event1(event_id):
+    response = requests.post(
+        "https://www.eventbriteapi.com/v3/users/me/owned_events/",
+        headers = {
+            "Authorization": "Bearer QXBUB7AGT6TGOYTSXLT4",
+        },
+        data = {
+            "event.name.html": "Simon Jarry",
+            "event.start.utc": "2018-01-31T13:00:00Z",
+            "event.start.timezone": "America/Los_Angeles",
+            "event.end.utc": "2018-05-31T13:00:00Z",
+            "event.end.timezone": "America/Los_Angeles",
+            "event.currency": "USD"
+        },
+        verify = True,  # Verify SSL certificate
+    )
+    print(response)
+
+
 
 
 if __name__ == '__main__':
-    pullfromsheet(21)
+    create_event1(21)
