@@ -8,6 +8,7 @@ from oauth2client import client
 from oauth2client import tools
 from eventbrite import Eventbrite
 import requests
+import datetime
 
 try:
     import argparse
@@ -71,22 +72,21 @@ def pull_from_sheet(row_id):
     values = result.get('values', [])
     return values[0]
 
-def create_event(event_id):
-    #details = pull_from_sheet(event_id)
-    eventbrite = Eventbrite('QXBUB7AGT6TGOYTSXLT4')
-    user = eventbrite.get_user()  # Not passing an argument returns yourself
-    events = eventbrite.get('/events/search/')
-    print(events)
-    print(user['id'])
+def format_date(date_str, time_str):
+    d = datetime.datetime(2016, 4, 17, hour=15, minute=4)
+    return d.isoformat() + "Z"
 
-def create_event1(event_id):
+def create_event(event_id):
+    details = pull_from_sheet(event_id)
+    title = details[2] + " " + details[0] + " at the Berkeley Forum"
+    datetime = 2
     response = requests.post(
-        "https://www.eventbriteapi.com/v3/users/me/owned_events/",
+        "https://www.eventbriteapi.com/v3/events/",
         headers = {
             "Authorization": "Bearer QXBUB7AGT6TGOYTSXLT4",
         },
         data = {
-            "event.name.html": "Simon Jarry",
+            "event.name.html": "(TEST) " + title,
             "event.start.utc": "2018-01-31T13:00:00Z",
             "event.start.timezone": "America/Los_Angeles",
             "event.end.utc": "2018-05-31T13:00:00Z",
@@ -101,4 +101,6 @@ def create_event1(event_id):
 
 
 if __name__ == '__main__':
-    create_event1(21)
+    print(format_date(2,2))
+    #pull_from_sheet(13)
+    #create_event(13)
