@@ -73,13 +73,21 @@ def pull_from_sheet(row_id):
     return values[0]
 
 def format_date(date_str, time_str):
-    d = datetime.datetime(2016, 4, 17, hour=15, minute=4)
-    return d.isoformat() + "Z"
+    print(date_str, time_str)
+    date_lst = date_str.split("/")
+    time_lst = time_str.split(":")
+    d = datetime.datetime(int(date_lst[2]), int(date_lst[0]), int(date_lst[1]), hour=int(time_lst[0]) + 12, minute=int(time_lst[1][:2]))
+    d = d + datetime.timedelta(hours=7)
+    start = d.isoformat() + "Z"
+    d = d + datetime.timedelta(hours=1, minutes=30)
+    end = d.isoformat() + "Z"
+    return start, end
 
 def create_event(event_id):
     details = pull_from_sheet(event_id)
     title = details[2] + " " + details[0] + " at the Berkeley Forum"
-    datetime = 2
+    start_time, end_time = format_date(details[3], details[4])
+    print(start_time, end_time)
     response = requests.post(
         "https://www.eventbriteapi.com/v3/events/",
         headers = {
@@ -87,9 +95,9 @@ def create_event(event_id):
         },
         data = {
             "event.name.html": "(TEST) " + title,
-            "event.start.utc": "2018-01-31T13:00:00Z",
+            "event.start.utc": start_time,
             "event.start.timezone": "America/Los_Angeles",
-            "event.end.utc": "2018-05-31T13:00:00Z",
+            "event.end.utc": end_time,
             "event.end.timezone": "America/Los_Angeles",
             "event.currency": "USD"
         },
@@ -101,6 +109,6 @@ def create_event(event_id):
 
 
 if __name__ == '__main__':
-    print(format_date(2,2))
+    #print(format_date("4/7/2016", "6:00 PM"))
     #pull_from_sheet(13)
-    #create_event(13)
+    create_event(12)
