@@ -76,6 +76,44 @@ def format_date(date_str, time_str):
     d = datetime.datetime(2016, 4, 17, hour=15, minute=4)
     return d.isoformat() + "Z"
 
+def get_description(descpt):
+    """Event Details:
+
+    [WRITE NAME OF EVENT IN ALL CAPS]
+
+    [Copy/paste Event Description from GIR or Facebook event page]
+
+    Date: [put in date]
+    Time: [put in time] (see below for more details about admission)
+    Location: [put in location hall/building]
+
+    Admission
+
+    This event is open to the public. Entry to the event will be open to ticketholders and, space-permitting, a limited number of walk-ins. Ticketholders are encouraged to arrive early to maximize their chances of getting in. Having a ticket does not guarantee access to the event but does give the ticketholder priority over walk-ins until [TIME] p.m., at which point walk-ins and ticketholders will have equal access to remaining seats. Our standard event policies apply. What follows is an overview of the admissions timeline. It may be subject to revisions as the event approaches. Seating in the venue is first-come, first served.
+
+    [TIME – 1 hour before event start time] p.m.  Event Admission Opens for Ticket Holders
+
+    [TIME – 10 min before event start time] p.m.  Event Admission No Longer Guaranteed for Ticket Holders
+
+    [TIME – 10 min before event start time]  p.m.  Admission Opens for Walk-Ins (Limited Seating)
+
+    [TIME – 5 min before event start time]  p.m.  Admission Closed (No Late Seating)
+
+    [TIME]  p.m.  Event Begins
+
+    More details will be shared very soon here and on our Facebook page. We encourage that you “Like” our Facebook page, The Berkeley Forum, to keep up to date on Forum events.
+
+    Note on Tickets
+
+    Tickets are non-transferable. While you may purchase a ticket on someone's behalf, their name must be listed on the ticket. All attendees will be asked to present a Valid ID at the venue that matches the name on the ticket.
+
+    All tickets sales are final. Tickets are non-transferable and non-refundable.
+
+    To secure a seat for more than one person, simply fill out the form once again for each subsequent person with his or her information.
+
+    Please visit our website for a complete list of event policies.
+    """
+
 def create_event(event_id):
     details = pull_from_sheet(event_id)
     title = details[2] + " " + details[0] + " at the Berkeley Forum"
@@ -86,9 +124,10 @@ def create_event(event_id):
             "Authorization": "Bearer QXBUB7AGT6TGOYTSXLT4",
         },
         data = {
-            "event.name.html": "(TEST) " + title,
+            "event.name.html": title,
             "event.start.utc": "2018-01-31T13:00:00Z",
             "event.start.timezone": "America/Los_Angeles",
+            "event.organizer_id": "The Berkeley Forum"
             "event.end.utc": "2018-05-31T13:00:00Z",
             "event.end.timezone": "America/Los_Angeles",
             "event.currency": "USD"
@@ -98,9 +137,31 @@ def create_event(event_id):
     print(response)
 
 
+def extract_event_id(event):
+    url = event.url
+    url = url.split('=')
+    return url[1]
+
+
+def update_ticket_types(event, ticketclass):
+    response = requests.post(
+        "https://www.eventbriteapi.com/v3/events/" + extract_event_id(event) + "/ticket_classes/" + ticketclass,
+        headers = {
+            "Authorization": "Bearer QXBUB7AGT6TGOYTSXLT4",
+        },
+        data = {
+            "event.name.html": "(TEST) " + title,
+            "event.start.utc": "2018-01-31T13:00:00Z",
+            "event.start.timezone": "America/Los_Angeles",
+            "event.organizer_id": "The Berkeley Forum"
+            "event.end.utc": "2018-05-31T13:00:00Z",
+            "event.end.timezone": "America/Los_Angeles",
+            "event.currency": "USD"
+        },
+        verify = True,  # Verify SSL certificate
+    )
 
 
 if __name__ == '__main__':
-    print(format_date(2,2))
-    #pull_from_sheet(13)
-    #create_event(13)
+    create_event(16)
+    create_event(17)
