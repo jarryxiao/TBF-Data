@@ -15,8 +15,10 @@ emailtonames = {}
 # emails_2016 = {}
 # nametoemails2016 = {}
 # emailtonames2016 = {}
+tix = 1
+
 events = {}
-with open('eventdata3.csv') as csvfile:
+with open('events20152016.csv') as csvfile:
 
 
     tickettypes = set()
@@ -28,7 +30,6 @@ with open('eventdata3.csv') as csvfile:
         name = name.lower()
 
         email = row[6].lower()
-        tix = int(row[7])
         event = row[0]
         checkedin = row[13]=="Checked In"
 
@@ -48,8 +49,8 @@ with open('eventdata3.csv') as csvfile:
         #     events[event]["Total"][1] += tix
         #     events[event][TT][1] += tix
         if checkedin:
-            if name == "hansmeet singh":
-                print(name)
+            if name == "matthew freeman":
+                name = "ezzy sriram"
             if name not in attendees and email not in emails:
                 emails[email] = tix
                 attendees[name] = tix
@@ -60,7 +61,8 @@ with open('eventdata3.csv') as csvfile:
                 attendees[emailtonames[email][0]] += tix
                 emails[email] += tix
             elif email not in emails:
-                nametoemails[name] += [email]
+                if email not in nametoemails[name]:
+                    nametoemails[name] += [email]                
                 attendees[name] += tix
                 emails[nametoemails[name][0]] += tix
             else:
@@ -71,12 +73,16 @@ with open('eventdata3.csv') as csvfile:
 
 with open('walkin.csv') as csvfile:
     r1 = csv.reader(csvfile)
+    c = 1
     for row in r1:
-        name = row[1].lower()
+        if c < 311:
+            name = row[1].lower()
+        else:
+            name = row[0] + " " + row[1]
+            name = name.lower()
         email = row[2].lower()
-        if name == "hansmeet singh":
-            print(name)
-
+        if '@' not in email:
+            pass
         if name not in attendees and email not in emails:
             emails[email] = tix
             attendees[name] = tix
@@ -87,23 +93,35 @@ with open('walkin.csv') as csvfile:
             attendees[emailtonames[email][0]] += tix
             emails[email] += tix
         elif email not in emails:
-            nametoemails[name] += [email]
+            if email not in nametoemails[name]:
+                nametoemails[name] += [email]
             attendees[name] += tix
             emails[nametoemails[name][0]] += tix
         else:
             attendees[name] += tix
             emails[email] += tix
         total += tix
+        c += 1
 
-    freqs = [(a, attendees[a]) for a in attendees.keys() if attendees[a] > 3]
+    freqs = [(a, attendees[a]) for a in attendees.keys() if attendees[a] > 1]
     freqs = sorted(freqs, key=lambda x: -x[1]) 
     freqs = [(f[0], nametoemails[f[0]], f[1]) for f in freqs] 
 
 with open('freqguests.csv', 'w') as csvfile:
-    w = csv.writer(csvfile, delimiter=',')
+    w = csv.writer(csvfile)
     for f in freqs:
-        w.writerow([f[0],f[1],f[2]])
-    print(len(freqs))
+        fn = f[0].split(" ")[0].title()
+        s0 = ""
+        for i in range(len(f[1])):
+            if i == 0:
+                s0 += f[1][i]
+            else:
+                s0 += ", " + f[1][i]
+        w.writerow([fn, f[0].title(), s0, f[2]])
+
+
+
+
         # if int(row[3][:4]) == 2016:
         #     if name not in attendees_2016 and email not in emails_2016:
         #         attendees_2016[name] = tix
