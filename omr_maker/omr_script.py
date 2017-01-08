@@ -20,4 +20,13 @@ class Person(object):
 		self.bday = data_row[11]
 		self.shirt_size = data_row[12]
 
+contact_dict = {}
+for i in range(1,len(data)):
+	contact_dict[data[i][0]+data[i][1]] = Person(data[i]) #using LastName + FirstName as key
+	
+
+
+
+
+
 	
